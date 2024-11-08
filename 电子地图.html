@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载高德地图</title>
+    <style>
+        html,
+        body,    
+    #container {
+    width: 100%;
+    height: 100%;
+    }
+    .input-card{
+        position: fixed;
+        background-color: #aaa9b0;
+        overflow-y: auto;
+        width: 150px;
+        height: 150px;
+        top: 10px;
+        right: 10px;
+    }
+    .input-card .btn{
+    margin-right: 1.2rem;
+    width: 9rem;
+    }
+    .input-card .btn:last-child{
+    margin-right: 0;
+    }
+  </style>
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+      securityJsCode: "724e7a2436efd8705ef700ec2f44c7e4",
+    };
+  </script>
+  <script src="https://webapi.amap.com/loader.js"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=9e79393c6a9ebf4024567e84733eac5d&plugin=AMap.Driving,AMap.Transfer,Amap.Walking,Amap.Riding,Amap.TruckDriving,Amap.DragRoute,AMap.MoveAnimation"></script>
+</head>
+
+<body>
+
+    <script>
+        console.log(AMap);
+    </script>
+
+    <div id="container"></div>
+    <div class="input-card">
+    <button class="btn" onclick="startAnimation()">开始动画</button>
+    </div>
+
+    <script>
+        const ICON_PATHS = {
+        };
+        const INFO_WINDOW_STYLE = {
+            offset: new AMap.Pixel(0, -30),
+            minWidth: 200
+        };
+        const map = new AMap.Map('container', {
+            center: [102.760536, 25.059855],
+            mapStyle: "amap://styles/default",
+            zoom: 16.5,
+            viewMode: '2D',
+            pitch: 45,
+        });
+        marker0 = new AMap.Marker({
+            map: map,
+            position: [102.75255874, 25.05775941],
+            icon: "https://a.amap.com/jsapi_demos/static/demo-center-v2/car.png",
+            offset: new AMap.Pixel(-13, -26),
+            duration:10000,
+        });//图标
+        AMap.plugin(["AMap.Driving","AMap.DragRoute"], function () {
+        var driving = new AMap.Driving({
+          map:map,
+          policy:0, 
+        });
+        var path = [];
+        path.push([102.75255874, 25.05775941]);
+        path.push([102.75482118, 25.05687740]);
+        path.push([102.75683284, 25.05660040]);
+        path.push([102.75932193, 25.05679965]);
+        path.push([102.75950968, 25.05798537]);
+        path.push([102.76023924, 25.05975909]);
+        path.push([102.76024653, 25.06062777]);
+        path.push([102.75766701, 25.06270471]);
+        path.push([102.75663570, 25.06275733]);
+        path.push([102.75642858, 25.06163079]);
+        var route = new AMap.DragRoute(map, path, 0);//动态
+        route.search();
+        driving.search(path,function(status,result){
+            });
+        });//动态路线动画
+
+          function startAnimation(){
+            marker0.moveAlong(path,{duration:10000,})//速度
+          };
+        function createMarker(position, title, icon) {
+            const marker = new AMap.Marker({
+                position: position,
+                title: title,
+                icon: icon
+            });
+            const label = new AMap.Text({
+                text: title,
+                position: marker.getPosition(),
+                offset: new AMap.Pixel(0, -20)
+            });
+            map.add(label);
+            return marker;
+        }
+        function createInfoWindow(content) {
+            return new AMap.InfoWindow({
+                content: content,
+               ...INFO_WINDOW_STYLE
+            });
+        }
+        function createIcon(path, size) {
+            return new AMap.Icon({
+                size: size,
+                image: path,
+                 imageSize: size
+            });
+        }
+        function createLocationMarkerAndInfoWindow(locationName, position, description) {
+            const icon = createIcon(ICON_PATHS[locationName], new AMap.Size(30, 30));
+            const marker = createMarker(position, locationName, icon);
+            const infoWindow = createInfoWindow(description);
+            marker.on('click', function () {
+                infoWindow.open(map, marker.getPosition());
+            });
+            map.add(marker);
+            return marker;
+        }
+        createLocationMarkerAndInfoWindow('第一教学楼', [102.758799, 25.060301], '这是我们学校的地标级建筑，拥有宽敞明亮的教室和先进的设备。');
+        createLocationMarkerAndInfoWindow('北图书馆', [102.757977, 25.061454], '这是山上图书馆，知识的宝库。拥有丰富的藏书，也可作为自习室使用。');
+        createLocationMarkerAndInfoWindow('第二教学楼', [102.756879, 25.061547], '这是一栋相对较小的教学楼，但是麻雀虽小五脏俱全。');
+        createLocationMarkerAndInfoWindow('第一食堂', [102.759064, 25.061776], '这是食堂，美味的汇聚地。提供各种口味的美食，满足师生的饮食需求。');
+        createLocationMarkerAndInfoWindow('第二食堂', [102.758103, 25.062613], '这是食堂，美味的汇聚地。提供各种口味的美食，满足师生的饮食需求。');
+        createLocationMarkerAndInfoWindow('竹苑5栋', [102.755962, 25.061865], '这是我住的宿舍，温馨且舒爽。');
+        createLocationMarkerAndInfoWindow('立德楼', [102.754989, 25.058016], '这是立德楼，经济与管理学科的重要教学和研究场所。');
+        createLocationMarkerAndInfoWindow('智华楼', [102.755191, 25.057342], '这是智华楼，经济与管理学科的重要教学和研究场所。');
+        createLocationMarkerAndInfoWindow('致知楼', [102.753838, 25.057888], '这是致知楼，经济与管理学科的重要教学和研究场所。');
+        createLocationMarkerAndInfoWindow('经管楼', [102.754151, 25.056888], '这是经管楼，经济与管理学科的重要教学和研究场所。');
+        createLocationMarkerAndInfoWindow('土木楼', [102.754714, 25.056781], '这是土木楼，土木工程专业的教学和实践基地。');
+        createLocationMarkerAndInfoWindow('至信楼', [102.755852, 25.057212], '至信楼为师生提供了良好的教学和办公环境。');
+        createLocationMarkerAndInfoWindow('文法楼', [102.755646, 25.056597], '文法楼是文学与法学等学科的教学场所。');
+        createLocationMarkerAndInfoWindow('生物楼', [102.757095, 25.056263], '生物楼致力于生物学科的教学与科研。');
+        createLocationMarkerAndInfoWindow('第二图书馆', [102.757471, 25.056981], '山下图书馆丰富了学校的文献资源。');
+        createLocationMarkerAndInfoWindow('至诚楼', [102.758808, 25.05716], '至诚楼承载着多样的教学和学术活动。');
+        createLocationMarkerAndInfoWindow('园林楼', [102.759904, 25.059178], '园林楼展现了园林艺术与设计的魅力。');
+        createLocationMarkerAndInfoWindow('林工楼', [102.757803, 25.05923], '林工楼为林业工程学科的发展提供支持。');
+        createLocationMarkerAndInfoWindow('林学楼', [102.756939, 25.062424], '林学楼是林学专业的重要教学和科研场所。');
+        createLocationMarkerAndInfoWindow('信息楼', [102.759788, 25.060382], '信息楼是信息技术相关学科的教学和研究中心。');
+        createLocationMarkerAndInfoWindow('体育馆', [102.7621, 25.06151], '体育馆为师生提供了体育锻炼和竞技的场所。');
+        createLocationMarkerAndInfoWindow('菜鸟驿站', [102.762959, 25.06031], '菜鸟驿站方便了师生的快递收发。');
+        createLocationMarkerAndInfoWindow('茶苑餐厅', [102.756554, 25.057892], '这是食堂，美味的汇聚地。提供各种口味的美食，满足师生的饮食需求。');
+        createLocationMarkerAndInfoWindow('第四食堂', [102.761788, 25.058597], '这是食堂，美味的汇聚地。提供各种口味的美食，满足师生的饮食需求。');
+        createLocationMarkerAndInfoWindow('松苑', [102.760712, 25.061466], '松苑是一个环境优美的住宿区域。');
+        createLocationMarkerAndInfoWindow('橡苑', [102.763257, 25.057519], '橡苑为学生提供舒适的居住环境。');
+        createLocationMarkerAndInfoWindow('篮球场', [102.760575, 25.062488], '这是篮球场，学生们进行体育活动的热门场地。');
+        createLocationMarkerAndInfoWindow('足球场', [102.761959, 25.062873], '足球场是体育爱好者的天堂。');
+        createLocationMarkerAndInfoWindow('工学楼', [102.762817, 25.062513], '工学楼是工程学科的教学和研究场所。');
+
+        AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.Geolocation', 'AMap.ControlBar', 'AMap.HawkEye'], function () {
+            const toolbar = new AMap.ToolBar({
+                position: { left: '10px', top: '10px' }
+            });
+            const scale = new AMap.Scale({
+                position: { left: '10px', bottom: '50px' }
+            });
+            const hawkEye = new AMap.HawkEye({
+                position: { right: '10px', bottom: '10px' }
+            });
+            const geolocation = new AMap.Geolocation({
+                position: { left: '120px', bottom: '50px' }
+            });
+            const controlBar = new AMap.ControlBar({
+                position: { right: '150px', top: '10px' }
+            });
+            map.addControl(toolbar);
+            map.addControl(scale);
+            map.addControl(geolocation);
+            map.addControl(controlBar);
+            map.addControl(hawkEye);
+        });
+    </script>
+</body>
+</html>
